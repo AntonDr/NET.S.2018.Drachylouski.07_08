@@ -35,7 +35,7 @@ namespace Task1Test
 
             string actual = obj.ToString("NP", CultureInfo.InvariantCulture);
 
-            string expected = $"{obj.Name}{obj.ContactPhone}";
+            string expected = $"{obj.Name},{obj.ContactPhone}";
 
             Assert.True(actual == expected);
         }

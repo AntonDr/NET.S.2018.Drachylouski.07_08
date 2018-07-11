@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -96,6 +97,16 @@ namespace Task1Logic
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
+            if (ReferenceEquals(format, null))
+            {
+                format = "G";
+            }
+
+            if (ReferenceEquals(formatProvider, null))
+            { 
+                formatProvider = CultureInfo.CurrentCulture;
+            }
+
             string temp = format.ToUpperInvariant();
 
             string result = string.Empty;
@@ -116,9 +127,14 @@ namespace Task1Logic
                     }
                     case 'R':
                     {
-                        result += Revenue.ToString(formatProvider);
+                        result += Revenue.ToString("G",formatProvider);
                         break;
                     }
+                }
+            
+                if (i<temp.Length-1)
+                {
+                    result += ",";
                 }
             }
 
@@ -133,7 +149,7 @@ namespace Task1Logic
         /// </returns>
         public override string ToString()
         {
-            return Name + ContactPhone + Revenue.ToString("G");
+            return Name+"," + ContactPhone+"," + Revenue.ToString("G");
         }
 
         /// <summary>
