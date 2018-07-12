@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace Task1Logic
     /// </summary>
     /// <seealso cref="System.IFormattable" />
     public sealed class Customer : IFormattable
-    {        
+    {
         private static readonly string patternPhoneNumber = @"\((?<AreaCode>\d{3})\)\s*(?<Number>\d{3}(?:-|\s*)\d{4})";
         private static readonly string patternName = @"^[\p{L}\p{M}' \.\-]+$";
 
@@ -95,77 +96,71 @@ namespace Task1Logic
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public string ToString(string format, IFormatProvider formatProvider)
+        public string ToString(string format, IFormatProvider formatProvider = null)
         {
-            if (ReferenceEquals(format, null))
+            if (format == null)
             {
                 format = "G";
             }
 
-            if (ReferenceEquals(formatProvider, null))
-            { 
-                formatProvider = CultureInfo.CurrentCulture;
+            if (formatProvider == null)
+            {
+               formatProvider = CultureInfo.CurrentCulture;
             }
 
             string temp = format.ToUpperInvariant();
-
-            string result = string.Empty;
-
-            for (int i = 0; i < temp.Length; i++)
-            {
-                switch (temp[i])
-                {
-                    case 'N':
-                    {
-                        result += Name.ToString(formatProvider);
-                        break;
-                    }
-                    case 'P':
-                    {
-                        result += ContactPhone.ToString(formatProvider);
-                        break;
-                    }
-                    case 'R':
-                    {
-                        result += Revenue.ToString("G",formatProvider);
-                        break;
-                    }
-                }
             
-                if (i<temp.Length-1)
-                {
-                    result += ",";
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return Name+"," + ContactPhone+"," + Revenue.ToString("G");
-        }
-
-        /// <summary>
-        /// Validates the of regular expressions.
-        /// </summary>
-        /// <param name="pattern">The pattern.</param>
-        /// <param name="value">The value.</param>
-        /// <exception cref="ArgumentException">value</exception>
-        private static void ValidateOfRegularExpressions(string pattern, string value)
-        {
-            Regex regex = new Regex(pattern);
-
-            if (!regex.IsMatch(value))
+            switch (temp)
             {
-                throw new ArgumentException(nameof(value));
+                case "N":
+                    {
+                        return Name.ToString(formatProvider);
+                    }
+                case "P":
+                    {
+                        return ContactPhone.ToString(formatProvider);
+                    }
+                case "R":
+                    {
+                        return Revenue.ToString("G", formatProvider);
+                    }
+                case "G":
+                case "NPR":
+                {
+                    return Name.ToString(formatProvider) + "," + contactPhone.ToString(formatProvider) + "," +
+                           Revenue.ToString("G", formatProvider);
+                }
+                default:
+                    return Name.ToString(formatProvider) + "," + contactPhone.ToString(formatProvider) + "," +
+                           Revenue.ToString("G", formatProvider);
             }
+        }
+
+    /// <summary>
+    /// Returns a <see cref="System.String" /> that represents this instance.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="System.String" /> that represents this instance.
+    /// </returns>
+    public override string ToString()
+    {
+        return ToString(null);
+    }
+
+    /// <summary>
+    /// Validates the of regular expressions.
+    /// </summary>
+    /// <param name="pattern">The pattern.</param>
+    /// <param name="value">The value.</param>
+    /// <exception cref="ArgumentException">value</exception>
+    private static void ValidateOfRegularExpressions(string pattern, string value)
+    {
+        Regex regex = new Regex(pattern);
+
+        if (!regex.IsMatch(value))
+        {
+            throw new ArgumentException(nameof(value));
         }
     }
+}
 }

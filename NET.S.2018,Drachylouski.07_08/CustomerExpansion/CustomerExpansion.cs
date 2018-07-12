@@ -26,16 +26,14 @@ namespace CustomerExpansion
 
         public string Format(string format, object arg, IFormatProvider formatProvider)
         {
-            if (arg == null || format != "W")
+            if (format != "W")
             {
                 return string.Format(Parent, "{0:" + format + "}", arg);
             }
 
             StringBuilder result = new StringBuilder();
 
-            var customer = arg as Customer;
-
-            if (!ReferenceEquals(customer, null))
+            if (arg is Customer customer)
             {
                 string digitList = string.Format(CultureInfo.InvariantCulture, "{0}", customer.ContactPhone);
                 foreach (char digit in digitList)
